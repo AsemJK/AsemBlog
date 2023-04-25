@@ -13,7 +13,7 @@ namespace BlogPosts.Helper
             try
             {
                 var emailToSend = new MimeMessage();
-                emailToSend.From.Add(MailboxAddress.Parse("crm@mize.com.sa"));
+                emailToSend.From.Add(MailboxAddress.Parse(""));//PUT from email main account
                 emailToSend.To.Add(MailboxAddress.Parse(email));
                 if (cc.Count > 0)
                 {
@@ -31,9 +31,9 @@ namespace BlogPosts.Helper
                 //send email
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls13;
                 using var emailClient = new MailKit.Net.Smtp.SmtpClient();
-                emailClient.LocalDomain = "mize.com.sa";
-                emailClient.Connect("smtppro.zoho.com", 465,true);//587//465
-                emailClient.Authenticate("crm@mize.com.sa", "sz5JqvwXAVky");
+                emailClient.LocalDomain = "";//any domain : prefare email domain
+                emailClient.Connect("smtppro.zoho.com", 465,true);//587//465 // I suppose you have email from Zoho
+                emailClient.Authenticate("", "");//user === email ; and password of email
                 await emailClient.SendAsync(emailToSend);
                 emailClient.Disconnect(true);
             }
