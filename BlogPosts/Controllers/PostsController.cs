@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BlogPosts.Data;
 using BlogPosts.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BlogPosts.Controllers
 {
@@ -62,6 +63,7 @@ namespace BlogPosts.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create([Bind("Id,PostName,PostDescription,Content,TimeStamp")] Post post)
         {
             if (ModelState.IsValid)
@@ -74,6 +76,7 @@ namespace BlogPosts.Controllers
         }
 
         // GET: Posts/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -94,6 +97,7 @@ namespace BlogPosts.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Edit(int id, [Bind("Id,PostName,PostDescription,Content,TimeStamp")] Post post)
         {
             if (id != post.Id)
@@ -125,6 +129,7 @@ namespace BlogPosts.Controllers
         }
 
         // GET: Posts/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -144,6 +149,7 @@ namespace BlogPosts.Controllers
 
         // POST: Posts/Delete/5
         [HttpPost, ActionName("Delete")]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

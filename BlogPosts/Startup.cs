@@ -12,6 +12,9 @@ using Microsoft.EntityFrameworkCore;
 using BlogPosts.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using BlogPosts.Helper;
 
 namespace BlogPosts
 {
@@ -33,14 +36,26 @@ namespace BlogPosts
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-
+            services.AddScoped<IEmailSender,EmailSender>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
-
+            services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            {
+                options.Password.RequiredUniqueChars = 1;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequiredLength = 3;
+                options.Password.RequireNonAlphanumeric = false;
+            })
+         .AddEntityFrameworkStores<ApplicationDbContext>()
+         .AddDefaultTokenProviders();
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Identity/Account/Login";
+            });
             services.AddControllersWithViews();
+            services.AddRazorPages();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,13 +74,17 @@ namespace BlogPosts
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseAuthentication();
             app.UseCookiePolicy();
             app.UseRouting();
-            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
-            endpoints.MapControllerRoute(name: "default",
-            pattern: "{controller=Home}/{action=Index}/{id?}")
-           );
+            {
+                endpoints.MapControllerRoute(name: "default",
+           pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
+            });
+
         }
     }
 }
